@@ -189,9 +189,6 @@ bool DaikinClimate::parse_state_frame_(const uint8_t frame[]) {
     case DAIKIN_FAN_2:
       this->fan_mode = climate::CLIMATE_FAN_LOW;
       break;
-    case DAIKIN_FAN_SILENT:
-      this->fan_mode = climate::CLIMATE_FAN_QUIET;
-      break;
     case DAIKIN_FAN_3:
       this->fan_mode = climate::CLIMATE_FAN_MEDIUM;
       break;
@@ -201,6 +198,9 @@ bool DaikinClimate::parse_state_frame_(const uint8_t frame[]) {
       break;
     case DAIKIN_FAN_AUTO:
       this->fan_mode = climate::CLIMATE_FAN_AUTO;
+      break;
+    case DAIKIN_FAN_SILENT:
+      this->fan_mode = climate::CLIMATE_FAN_QUIET;
       break;
   }
   this->publish_state();
