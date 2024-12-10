@@ -65,7 +65,7 @@ void DaikinClimate::transmit_state() {
   transmit.perform();
 }
 
-uint8_t DaikinClimate::operation_mode_() {
+uint8_t DaikinClimate::operation_mode_() const {
   uint8_t operating_mode = DAIKIN_MODE_ON;
   switch (this->mode) {
     case climate::CLIMATE_MODE_COOL:
@@ -92,9 +92,12 @@ uint8_t DaikinClimate::operation_mode_() {
   return operating_mode;
 }
 
-uint16_t DaikinClimate::fan_speed_() {
+uint16_t DaikinClimate::fan_speed_() const {
   uint16_t fan_speed;
   switch (this->fan_mode.value()) {
+    case climate::CLIMATE_FAN_QUIET:
+      fan_speed = DAIKIN_FAN_SILENT << 8;
+      break;
     case climate::CLIMATE_FAN_LOW:
       fan_speed = DAIKIN_FAN_1 << 8;
       break;
@@ -126,7 +129,7 @@ uint16_t DaikinClimate::fan_speed_() {
   return fan_speed;
 }
 
-uint8_t DaikinClimate::temperature_() {
+uint8_t DaikinClimate::temperature_() const {
   // Force special temperatures depending on the mode
   switch (this->mode) {
     case climate::CLIMATE_MODE_FAN_ONLY:
@@ -170,9 +173,6 @@ bool DaikinClimate::parse_state_frame_(const uint8_t frame[]) {
     this->mode = climate::CLIMATE_MODE_OFF;
   }
   uint8_t temperature = frame[6];
-  if (!(temperature & 0xC0)) {
-    this->target_temperature = temperature >> 1;
-  }
   uint8_t fan_mode = frame[8];
   uint8_t swing_mode = frame[9];
   if (fan_mode & 0xF && swing_mode & 0xF) {
@@ -187,8 +187,10 @@ bool DaikinClimate::parse_state_frame_(const uint8_t frame[]) {
   switch (fan_mode & 0xF0) {
     case DAIKIN_FAN_1:
     case DAIKIN_FAN_2:
-    case DAIKIN_FAN_SILENT:
       this->fan_mode = climate::CLIMATE_FAN_LOW;
+      break;
+    case DAIKIN_FAN_SILENT:
+      this->fan_mode = climate::CLIMATE_FAN_QUIET;
       break;
     case DAIKIN_FAN_3:
       this->fan_mode = climate::CLIMATE_FAN_MEDIUM;
