@@ -151,19 +151,25 @@ bool DaikinClimate::parse_state_frame_(const uint8_t frame[]) {
   if (frame[DAIKIN_STATE_FRAME_SIZE - 1] != checksum)
     return false;
   uint8_t mode = frame[5];
+  // Temperature is given in degrees celcius * 2
+  // only update for states that use the temperature
+  uint8_t temperature = frame[6];
   if (mode & DAIKIN_MODE_ON) {
     switch (mode & 0xF0) {
       case DAIKIN_MODE_COOL:
         this->mode = climate::CLIMATE_MODE_COOL;
+        this->target_temperature = static_cast<float>(temperature * 0.5f);
         break;
       case DAIKIN_MODE_DRY:
         this->mode = climate::CLIMATE_MODE_DRY;
         break;
       case DAIKIN_MODE_HEAT:
         this->mode = climate::CLIMATE_MODE_HEAT;
+        this->target_temperature = static_cast<float>(temperature * 0.5f);
         break;
       case DAIKIN_MODE_AUTO:
         this->mode = climate::CLIMATE_MODE_HEAT_COOL;
+        this->target_temperature = static_cast<float>(temperature * 0.5f);
         break;
       case DAIKIN_MODE_FAN:
         this->mode = climate::CLIMATE_MODE_FAN_ONLY;
@@ -172,7 +178,6 @@ bool DaikinClimate::parse_state_frame_(const uint8_t frame[]) {
   } else {
     this->mode = climate::CLIMATE_MODE_OFF;
   }
-  uint8_t temperature = frame[6];
   uint8_t fan_mode = frame[8];
   uint8_t swing_mode = frame[9];
   if (fan_mode & 0xF && swing_mode & 0xF) {
