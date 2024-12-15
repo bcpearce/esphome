@@ -134,7 +134,6 @@ uint8_t DaikinClimate::temperature_() const {
   switch (this->mode) {
     case climate::CLIMATE_MODE_FAN_ONLY:
       return 0x32;
-    case climate::CLIMATE_MODE_HEAT_COOL:
     case climate::CLIMATE_MODE_DRY:
       return 0xc0;
     default:
