@@ -37,7 +37,7 @@ void TiLP5562LightOutput ::setup() {
 }
 void TiLP5562LightOutput ::loop() {
   // Wait at least 500ms
-  if (millis() - this->init_time_ > 500 && !this->did_setup_) {
+  if (!this->did_setup_ && (millis() - this->init_time_ > 500)) {
     esph_log_d(TAG, "Configuring LP5562 Controller");
     if (!this->write_byte(CONFIG_ADDR, INTERNAL_CLK)) {
       this->mark_failed(LOG_STR(FAIL_MSG));
