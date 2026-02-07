@@ -64,4 +64,10 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
     }
   }
 }
+
+light::LightTraits TiLP5562LightOutput::get_traits() {
+  auto traits = light::LightTraits();
+  traits.set_supported_color_modes({light::ColorMode::RGB_WHITE});
+  return traits;
+}
 }  // namespace esphome::ti_lp5562
