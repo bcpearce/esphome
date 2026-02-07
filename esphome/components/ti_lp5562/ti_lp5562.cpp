@@ -11,17 +11,11 @@ static constexpr uint8_t LEDMAP_RGBW = 0x00;
 
 static constexpr const char *FAIL_MSG{"Failed to reset LP5562 controller"};
 
-static constexpr const char *TAG{"TI LP5562 RGBW Light Controller Controller"};
+static constexpr const char *TAG{"ti_lp5562"};
 
 namespace esphome::ti_lp5562 {
 void TiLP5562LightOutput ::setup() {
   if (!this->write_byte(SETUP_ADDR, I2C_CTRL)) {
-    this->mark_failed(LOG_STR(FAIL_MSG));
-  }
-  if (!this->write_byte(CONFIG_ADDR, INTERNAL_CLK)) {
-    this->mark_failed(LOG_STR(FAIL_MSG));
-  }
-  if (!this->write_byte(LEDMAP_ADDR, LEDMAP_RGBW)) {
     this->mark_failed(LOG_STR(FAIL_MSG));
   }
   this->init_time_ = millis();
@@ -29,6 +23,14 @@ void TiLP5562LightOutput ::setup() {
 void TiLP5562LightOutput ::loop() {
   // Wait at least 500ms
   if (millis() - this->init_time_ > 500) {
+    if (!this->write_byte(CONFIG_ADDR, INTERNAL_CLK)) {
+      this->mark_failed(LOG_STR(FAIL_MSG));
+      return;
+    }
+    if (!this->write_byte(LEDMAP_ADDR, LEDMAP_RGBW)) {
+      this->mark_failed(LOG_STR(FAIL_MSG));
+      return;
+    }
     this->did_setup_ = true;
     esph_log_d(TAG, "Startup complete");
   }
@@ -80,16 +82,21 @@ light::LightTraits TiLP5562LightOutput::get_traits() {
 }
 
 void TiLP5562LightOutput::dump_config() {
-  ESP_LOGCONFIG(TAG, "LP5562:");
+  ESP_LOGCONFIG(TAG, "LP5562 RGBW LED Controller:");
   ESP_LOGCONFIG(TAG, "  Color Mode: %d", this->mode_);
-  if (this->mode_ == light::ColorMode::RGB || this->mode_ == light::ColorMode::RGB_WHITE) {
-    ESP_LOGCONFIG(TAG, "  R: duty (0x%02x)", this->r_pwm_);
-    ESP_LOGCONFIG(TAG, "  G: duty (0x%02x)", this->g_pwm_);
-    ESP_LOGCONFIG(TAG, "  B: duty (0x%02x)", this->b_pwm_);
+  switch (this->mode_) {
+    case light::ColorMode::RGB:
+    case light::ColorMode::RGB_WHITE:
+      ESP_LOGCONFIG(TAG, "  R: duty (0x%02x)", this->r_pwm_);
+      ESP_LOGCONFIG(TAG, "  G: duty (0x%02x)", this->g_pwm_);
+      ESP_LOGCONFIG(TAG, "  B: duty (0x%02x)", this->b_pwm_);
+      break;
   }
-  if (this->mode_ == light::ColorMode::RGB_WHITE || this->mode_ == light::ColorMode::WHITE ||
-      this->mode_ == light::ColorMode::BRIGHTNESS) {
-    ESP_LOGCONFIG(TAG, "  W: duty (0x%02x)", this->w_pwm_);
+  switch (this->mode_) {
+    case light::ColorMode::WHITE:
+    case light::ColorMode::BRIGHTNESS:
+      ESP_LOGCONFIG(TAG, "  W: duty (0x%02x)", this->w_pwm_);
+      break;
   }
 }
 
