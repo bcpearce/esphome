@@ -7,7 +7,6 @@
 
 namespace esphome {
 namespace ti_lp5562 {
-
 enum class ChannelAddr : uint8_t { RED = 0x04, GREEN = 0x03, BLUE = 0x02, WHITE = 0x0E };
 
 class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, public Component {
