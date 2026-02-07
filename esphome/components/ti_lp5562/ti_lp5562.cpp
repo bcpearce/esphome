@@ -50,6 +50,7 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
       static constexpr uint8_t red_addr = 0x04;
       if (this->write_byte(red_addr, r)) {
         this->r_pwm_ = r;
+        this->red_->set_level(red);
         esph_log_d(TAG, "Set Red to %.0f%% duty cycle (0x%02x)", red, r);
       }
     }
@@ -57,6 +58,7 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
       static constexpr uint8_t green_addr = 0x03;
       if (this->write_byte(green_addr, g)) {
         this->g_pwm_ = g;
+        this->green_->set_level(green);
         esph_log_d(TAG, "Set Green to %.0f%% duty cycle (0x%02x)", green, g);
       }
     }
@@ -64,6 +66,7 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
       static constexpr uint8_t blue_addr = 0x02;
       if (this->write_byte(blue_addr, b)) {
         this->b_pwm_ = b;
+        this->blue_->set_level(blue);
         esph_log_d(TAG, "Set Blue to %.0f%% duty cycle (0x%02x)", blue, b);
       }
     }
@@ -71,6 +74,7 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
       static constexpr uint8_t white_addr = 0x0E;
       if (this->write_byte(white_addr, w)) {
         this->w_pwm_ = w;
+        this->white_->set_level(white);
         esph_log_d(TAG, "Set White to %.0f%% duty cycle (0x%02x)", white, w);
       }
     }

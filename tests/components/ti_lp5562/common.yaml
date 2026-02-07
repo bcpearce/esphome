@@ -1,0 +1,3 @@
+light:
+  - platform: ti_lp5562
+    color_mode: RGB_WHITE
