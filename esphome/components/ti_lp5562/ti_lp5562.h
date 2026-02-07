@@ -7,6 +7,9 @@
 
 namespace esphome {
 namespace ti_lp5562 {
+
+enum class ChannelAddr : uint8_t { RED = 0x04, GREEN = 0x03, BLUE = 0x02, WHITE = 0x0E };
+
 class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, public Component {
  public:
   void set_color_mode(light::ColorMode mode) { mode_ = mode; };
@@ -23,11 +26,13 @@ class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, pu
   light::ColorMode mode_{light::ColorMode::UNKNOWN};
   uint32_t init_time_{0};
   bool did_setup_{false};
-  uint8_t r_pwm_{0x00};
-  uint8_t g_pwm_{0x00};
-  uint8_t b_pwm_{0x00};
-  uint8_t w_pwm_{0x00};
+  uint8_t r_duty_{0x00};
+  uint8_t g_duty_{0x00};
+  uint8_t b_duty_{0x00};
+  uint8_t w_duty_{0x00};
   light::LightState *light_state_{nullptr};
+
+  void _set_channel(float channel_state, uint8_t &duty, ChannelAddr channel_addr);
 };
 }  // namespace ti_lp5562
 }  // namespace esphome
