@@ -16,10 +16,10 @@ static constexpr const char *TAG{"ti_lp5562"};
 namespace esphome::ti_lp5562 {
 void TiLP5562LightOutput ::setup() {
   if (!this->write_byte(SETUP_ADDR, I2C_CTRL)) {
-    esph_log_d(TAG, "Reset LP5562 Controller");
     this->mark_failed(LOG_STR(FAIL_MSG));
   }
   this->init_time_ = millis();
+  esph_log_d(TAG, "Reset LP5562 Controller");
 }
 void TiLP5562LightOutput ::loop() {
   // Wait at least 500ms
