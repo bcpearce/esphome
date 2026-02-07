@@ -2,7 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/light/light_output.h"
-#include "esphome/components/output/float_output.h"
+#include "esphome/components/light/light_state.h"
 #include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
@@ -12,10 +12,12 @@ class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, pu
   void set_color_mode(light::ColorMode mode) { mode_ = mode; };
   void setup() override;
   void loop() override;
+  void dump_config();
+  float get_setup_priority() const override { return esphome::setup_priority::DATA; }
+
+  void setup_state(light::LightState *state) override { this->light_state_ = state; }
   void write_state(light::LightState *state) override;
   light::LightTraits get_traits() override;
-  float get_setup_priority() const override { return esphome::setup_priority::DATA; }
-  void dump_config();
 
  protected:
   light::ColorMode mode_{light::ColorMode::UNKNOWN};
@@ -25,10 +27,7 @@ class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, pu
   uint8_t g_pwm_{0x00};
   uint8_t b_pwm_{0x00};
   uint8_t w_pwm_{0x00};
-  output::FloatOutput *red_{nullptr};
-  output::FloatOutput *green_{nullptr};
-  output::FloatOutput *blue_{nullptr};
-  output::FloatOutput *white_{nullptr};
+  light::LightState *light_state_{nullptr};
 };
 }  // namespace ti_lp5562
 }  // namespace esphome
