@@ -60,14 +60,10 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
   state->current_values_as_rgbw(&red, &green, &blue, &white);
   if (this->did_setup_) {
     // If setup is complete, forward the setting to each channel for each change
-    if (light::has_capability(light::ColorModeMask({this->mode_}), light::ColorCapability::RGB)) {
-      _set_channel(red, this->r_duty_, ChannelAddr::RED);
-      _set_channel(green, this->g_duty_, ChannelAddr::GREEN);
-      _set_channel(blue, this->b_duty_, ChannelAddr::BLUE);
-    }
-    if (light::has_capability(light::ColorModeMask({this->mode_}), light::ColorCapability::BRIGHTNESS)) {
-      _set_channel(white, this->w_duty_, ChannelAddr::WHITE);
-    }
+    _set_channel(red, this->r_duty_, ChannelAddr::RED);
+    _set_channel(green, this->g_duty_, ChannelAddr::GREEN);
+    _set_channel(blue, this->b_duty_, ChannelAddr::BLUE);
+    _set_channel(white, this->w_duty_, ChannelAddr::WHITE);
   }
 }
 
