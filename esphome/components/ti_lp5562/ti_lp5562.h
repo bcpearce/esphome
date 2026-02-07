@@ -13,6 +13,7 @@ class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, pu
   void loop() override;
   void write_state(light::LightState *state) override;
   light::LightTraits get_traits() override;
+  float get_setup_priority() const override { return esphome::setup_priority::DATA; }
   void dump_config();
 
  protected:
