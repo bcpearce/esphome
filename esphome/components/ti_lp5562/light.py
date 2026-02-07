@@ -2,11 +2,7 @@ import esphome.codegen as cg
 from esphome.components import i2c, light
 from esphome.components.light.types import COLOR_MODES
 import esphome.config_validation as cv
-from esphome.const import (
-    CONF_COLOR_MODE,
-    CONF_DEFAULT_TRANSITION_LENGTH,
-    CONF_OUTPUT_ID,
-)
+from esphome.const import CONF_COLOR_MODE, CONF_OUTPUT_ID
 
 DEPENDENCIES = ["i2c"]
 
@@ -27,9 +23,6 @@ CONFIG_SCHEMA = (
                 upper=True,
                 space="_",
             ),
-            cv.Optional(
-                CONF_DEFAULT_TRANSITION_LENGTH, default="0s"
-            ): cv.positive_time_period_milliseconds,
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
