@@ -8,12 +8,15 @@ namespace esphome {
 namespace ti_lp5562 {
 class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, public Component {
  public:
+  void set_color_mode(light::ColorMode mode) { mode_ = mode; };
   void setup() override;
   void loop() override;
   void write_state(light::LightState *state) override;
   light::LightTraits get_traits() override;
+  void dump_config();
 
  protected:
+  light::ColorMode mode_{light::ColorMode::UNKNOWN};
   uint32_t init_time_{0};
   bool did_setup_{false};
   uint8_t r_pwm_{0x00};
