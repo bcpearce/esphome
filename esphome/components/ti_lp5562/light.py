@@ -8,7 +8,7 @@ DEPENDENCIES = ["i2c"]
 
 ti_lp5562_ns = cg.esphome_ns.namespace("ti_lp5562")
 TiLp5562Light = ti_lp5562_ns.class_(
-    "TiLP5562LightOutput", light.LightOutput, i2c.I2CDevice
+    "TiLP5562LightOutput", light.LightOutput, i2c.I2CDevice, cg.Component
 )
 
 CONFIG_SCHEMA = (
@@ -33,6 +33,6 @@ CONFIG_SCHEMA = (
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
     await cg.register_component(var, config)
-    await light.register_light(var, config)
     await i2c.register_i2c_device(var, config)
     cg.add(var.set_color_mode(config[CONF_COLOR_MODE]))
+    await light.register_light(var, config)
