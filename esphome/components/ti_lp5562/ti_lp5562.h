@@ -1,18 +1,19 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/rgbw/rgbw_light_output.h"
-#include "esphome/components/i2c_device/i2c_device.h"
+#include "esphome/components/light/light_output.h"
+#include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
 namespace ti_lp5562 {
-class TiLP5562 : public rgbw::RGBWLightOutput, public i2c_device::I2CDeviceComponent {
+class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, public Component {
  public:
   void setup() override;
   void loop() override;
   void write_state(light::LightState *state) override;
+  light::LightTraits get_traits() override;
 
- private:
+ protected:
   uint32_t init_time_{0};
   bool did_setup_{false};
   uint8_t r_pwm_{0x00};

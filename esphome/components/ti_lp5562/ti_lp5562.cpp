@@ -9,55 +9,59 @@ static constexpr uint8_t INTERNAL_CLK = 0x01;
 static constexpr uint8_t LEDMAP_ADDR = 0x70;
 static constexpr uint8_t LEDMAP_WONLY = 0x80;
 
+static constexpr const char *FAIL_MSG{"Failed to reset LP5562 controller"};
+
 namespace esphome::ti_lp5562 {
-void TiLP5562::setup() {
+void TiLP5562LightOutput ::setup() {
   if (!this->write_byte(SETUP_ADDR, I2C_CTRL)) {
-    this->mark_failed("Failed to reset LP5562 controller");
+    this->mark_failed(LOG_STR(FAIL_MSG));
   }
   if (!this->write_byte(CONFIG_ADDR, INTERNAL_CLK)) {
-    this->mark_failed("Failed to enable LP5562 controller");
+    this->mark_failed(LOG_STR(FAIL_MSG));
+  }
+  if (!this->write_byte(LEDMAP_ADDR, LEDMAP_WONLY)) {
+    this->mark_failed(LOG_STR(FAIL_MSG));
   }
   this->init_time_ = millis();
 }
-void TiLP5562::loop() {
+void TiLP5562LightOutput ::loop() {
   // Wait at least 500ms
   if (millis() - this->init_time_ > 500) {
     this->did_setup_ = true;
   }
 }
-void TiLP5562::write_state(light::LightState *state) {
-  float red, green, blue, white;
-  state->current_values_as_rgbw(&red, &green, &blue, &white, this->color_interlock_);
+void TiLP5562LightOutput ::write_state(light::LightState *state) {
+  float red{0.f};
+  float green{0.f};
+  float blue{0.f};
+  float white{0.f};
+  state->current_values_as_rgbw(&red, &green, &blue, &white);
   if (this->did_setup_) {
     // If setup is complete, forward the setting to each channel for each change
-    if (const uint8_t r = static_cast<uint8_t>(red * 0xFF); r != r_pwm_) {
+    if (const uint8_t r = static_cast<uint8_t>(red * 0xFF); r != this->r_pwm_) {
       static constexpr uint8_t red_addr = 0x04;
       if (this->write_byte(red_addr, r)) {
-        r_pwm_ = r;
+        this->r_pwm_ = r;
       }
     }
-    if (const uint8_t g = static_cast<uint8_t>(green * 0xFF); g != g_pwm_) {
+    if (const uint8_t g = static_cast<uint8_t>(green * 0xFF); g != this->g_pwm_) {
       static constexpr uint8_t green_addr = 0x03;
       if (this->write_byte(green_addr, g)) {
         g_pwm_ = g;
       }
     }
-    if (const uint8_t b = static_cast<uint8_t>(blue * 0xFF); b != b_pwm_) {
+    if (const uint8_t b = static_cast<uint8_t>(blue * 0xFF); b != this->b_pwm_) {
       static constexpr uint8_t blue_addr = 0x02;
       if (this->write_byte(blue_addr, b)) {
-        b_pwm_ = b;
+        this->b_pwm_ = b;
       }
     }
-    if (const uint8_t w = static_cast<uint8_t>(white * 0xFF); w != w_pwm_) {
+    if (const uint8_t w = static_cast<uint8_t>(white * 0xFF); w != this->w_pwm_) {
       static constexpr uint8_t white_addr = 0x0E;
       if (this->write_byte(white_addr, w)) {
-        w_pwm_ = w;
+        this->w_pwm_ = w;
       }
     }
   }
-  this->red_->set_level(red);
-  this->green_->set_level(green);
-  this->blue_->set_level(blue);
-  this->white_->set_level(white);
 }
 }  // namespace esphome::ti_lp5562
