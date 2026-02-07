@@ -4,7 +4,7 @@ from esphome.components.rgbw import light as rgbw_light
 import esphome.config_validation as cv
 from esphome.const import CONF_ID, CONF_OUTPUT_ID
 
-DEPENDENCIES = ["i2c", "rgbw"]
+DEPENDENCIES = ["i2c"]
 
 ti_lp5562_ns = cg.esphome_ns.namespace("ti_lp5562")
 TiLp5562Light = ti_lp5562_ns.class_("TiLp5562Light", i2c.I2CDevice)
