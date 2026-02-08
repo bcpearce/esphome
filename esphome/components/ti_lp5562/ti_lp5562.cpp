@@ -25,6 +25,8 @@ static const char *get_channel_name(ChannelAddr channel) {
       return "blue";
     case ChannelAddr::WHITE:
       return "white";
+    default:
+      return "";
   }
 }
 
@@ -60,10 +62,21 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
   ESP_LOGD(TAG, "Received new light state r=%.02f, g=%.02f, b=%.02f, w=%.02f", red, green, blue, white);
   if (this->did_setup_) {
     // If setup is complete, forward the setting to each channel for each change
-    _set_channel(red, this->r_duty_, ChannelAddr::RED);
-    _set_channel(green, this->g_duty_, ChannelAddr::GREEN);
-    _set_channel(blue, this->b_duty_, ChannelAddr::BLUE);
-    _set_channel(white, this->w_duty_, ChannelAddr::WHITE);
+    switch (this->mode_) {
+      case light::ColorMode::RGB:
+      case light::ColorMode::RGB_WHITE:
+        _set_channel(red, this->r_duty_, ChannelAddr::RED);
+        _set_channel(green, this->g_duty_, ChannelAddr::GREEN);
+        _set_channel(blue, this->b_duty_, ChannelAddr::BLUE);
+        break;
+    }
+    switch (this->mode_) {
+      case light::ColorMode::RGB_WHITE:
+      case light::ColorMode::WHITE:
+      case light::ColorMode::BRIGHTNESS:
+        _set_channel(white, this->w_duty_, ChannelAddr::WHITE);
+        break;
+    }
   } else {
     ESP_LOGD(TAG, "Setup not complete, ignoring new light state");
   }
@@ -87,6 +100,7 @@ void TiLP5562LightOutput::dump_config() {
       break;
   }
   switch (this->mode_) {
+    case light::ColorMode::RGB_WHITE:
     case light::ColorMode::WHITE:
     case light::ColorMode::BRIGHTNESS:
       ESP_LOGCONFIG(TAG, "  W: duty (0x%02x)", this->w_duty_);
