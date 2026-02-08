@@ -1,12 +1,14 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/components/i2c/i2c.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
-#include "esphome/components/i2c/i2c.h"
+#include "esphome/components/light/light_traits.h"
 
 namespace esphome {
 namespace ti_lp5562 {
+
 enum class ChannelAddr : uint8_t { RED = 0x04, GREEN = 0x03, BLUE = 0x02, WHITE = 0x0E };
 
 class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, public Component {
@@ -14,8 +16,7 @@ class TiLP5562LightOutput : public light::LightOutput, public i2c::I2CDevice, pu
   void set_color_mode(light::ColorMode mode) { mode_ = mode; };
   void setup() override;
   void loop() override;
-  void dump_config();
-  float get_setup_priority() const override { return esphome::setup_priority::DATA; }
+  void dump_config() override;
 
   void setup_state(light::LightState *state) override { this->light_state_ = state; }
   void write_state(light::LightState *state) override;

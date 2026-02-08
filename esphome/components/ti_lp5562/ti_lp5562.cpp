@@ -29,11 +29,10 @@ static const char *get_channel_name(ChannelAddr channel) {
 }
 
 void TiLP5562LightOutput ::setup() {
+  esph_log_d(TAG, "Reset LP5562 Controller");
   if (!this->write_byte(SETUP_ADDR, I2C_CTRL)) {
     this->mark_failed(LOG_STR(FAIL_MSG));
   }
-  this->init_time_ = millis();
-  esph_log_d(TAG, "Reset LP5562 Controller");
 }
 void TiLP5562LightOutput ::loop() {
   // Wait at least 500ms
@@ -58,12 +57,15 @@ void TiLP5562LightOutput ::write_state(light::LightState *state) {
   float blue{0.f};
   float white{0.f};
   state->current_values_as_rgbw(&red, &green, &blue, &white);
+  ESP_LOGD(TAG, "Received new light state r=%.02f, g=%.02f, b=%.02f, w=%.02f", red, green, blue, white);
   if (this->did_setup_) {
     // If setup is complete, forward the setting to each channel for each change
     _set_channel(red, this->r_duty_, ChannelAddr::RED);
     _set_channel(green, this->g_duty_, ChannelAddr::GREEN);
     _set_channel(blue, this->b_duty_, ChannelAddr::BLUE);
     _set_channel(white, this->w_duty_, ChannelAddr::WHITE);
+  } else {
+    ESP_LOGD(TAG, "Setup not complete, ignoring new light state");
   }
 }
 
@@ -93,12 +95,11 @@ void TiLP5562LightOutput::dump_config() {
 }
 
 void TiLP5562LightOutput::_set_channel(float channel_state, uint8_t &duty, ChannelAddr channel_addr) {
-  if (const uint8_t new_duty = static_cast<uint8_t>(channel_state * 0xFF); duty != duty) {
-    if (this->write_byte(static_cast<uint8_t>(channel_addr), new_duty)) {
-      duty = new_duty;
-      esph_log_d(TAG, "Set %s to %.0f%% duty cycle (0x%02x)", get_channel_name(channel_addr), channel_state * 100.f,
-                 new_duty);
-    }
+  const uint8_t new_duty = static_cast<uint8_t>(channel_state * 0xFF);
+  if (new_duty != duty && this->write_byte(static_cast<uint8_t>(channel_addr), new_duty)) {
+    duty = new_duty;
+    esph_log_d(TAG, "Set %s to %.0f%% duty cycle (0x%02x)", get_channel_name(channel_addr), channel_state * 100.f,
+               new_duty);
   }
 }
 

@@ -2,7 +2,11 @@ import esphome.codegen as cg
 from esphome.components import i2c, light
 from esphome.components.light.types import COLOR_MODES
 import esphome.config_validation as cv
-from esphome.const import CONF_COLOR_MODE, CONF_OUTPUT_ID
+from esphome.const import (
+    CONF_COLOR_MODE,
+    CONF_DEFAULT_TRANSITION_LENGTH,
+    CONF_OUTPUT_ID,
+)
 
 DEPENDENCIES = ["i2c"]
 
@@ -23,16 +27,19 @@ CONFIG_SCHEMA = (
                 upper=True,
                 space="_",
             ),
+            cv.Optional(
+                CONF_DEFAULT_TRANSITION_LENGTH, default="0s"
+            ): cv.positive_time_period_milliseconds,
         }
     )
-    .extend(cv.COMPONENT_SCHEMA)
     .extend(i2c.i2c_device_schema(0x30))
+    .extend(cv.COMPONENT_SCHEMA)
 )
 
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
+    await light.register_light(var, config)
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)
     cg.add(var.set_color_mode(config[CONF_COLOR_MODE]))
-    await light.register_light(var, config)
