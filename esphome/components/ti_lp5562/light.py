@@ -5,6 +5,7 @@ import esphome.config_validation as cv
 from esphome.const import (
     CONF_COLOR_MODE,
     CONF_DEFAULT_TRANSITION_LENGTH,
+    CONF_GAMMA_CORRECT,
     CONF_OUTPUT_ID,
 )
 
@@ -30,6 +31,7 @@ CONFIG_SCHEMA = (
             cv.Optional(
                 CONF_DEFAULT_TRANSITION_LENGTH, default="0s"
             ): cv.positive_time_period_milliseconds,
+            cv.Optional(CONF_GAMMA_CORRECT, default=0.0): cv.positive_float,
         }
     )
     .extend(i2c.i2c_device_schema(0x30))
