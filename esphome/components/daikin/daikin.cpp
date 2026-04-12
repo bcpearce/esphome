@@ -149,6 +149,10 @@ bool DaikinClimate::parse_state_frame_(const uint8_t frame[]) {
   }
   if (frame[DAIKIN_STATE_FRAME_SIZE - 1] != checksum)
     return false;
+  ESP_LOGV(TAG, "Received Daikin:");
+  for (size_t i = 0; i < DAIKIN_STATE_FRAME_SIZE; ++i) {
+    ESP_LOGV(TAG, "  [0x%02x]", frame[i]);
+  }
   uint8_t mode = frame[5];
   // Temperature is given in degrees celcius * 2
   // only update for states that use the temperature
