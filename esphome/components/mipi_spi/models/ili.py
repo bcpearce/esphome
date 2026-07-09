@@ -799,3 +799,17 @@ ST7789V.extend(
     reset_pin=2,
     dc_pin=0,
 )
+
+
+ST7789V.extend(
+    "GEEKMAGIC-SMALLTV-PRO",
+    data_rate="40MHz",
+    height=240,
+    width=240,
+    offset_width=0,
+    offset_height=0,
+    invert_colors=True,
+    buffer_size=0.125,
+    reset_pin=4,
+    dc_pin=2,
+)
