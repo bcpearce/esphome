@@ -798,5 +798,4 @@ ST7789V.extend(
     buffer_size=0.125,
     reset_pin=2,
     dc_pin=0,
-    invert_colors=True,
 )
