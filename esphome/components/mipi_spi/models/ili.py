@@ -179,6 +179,9 @@ ILI9342 = DriverChip(
 # M5Stack Core2 uses ILI9341 chip - mirror_x disabled for correct orientation
 ILI9341.extend(
     "M5CORE2",
+    # Reset native dimensions due to axis swap.
+    native_width=320,
+    native_height=240,
     width=320,
     height=240,
     mirror_x=False,
@@ -555,7 +558,7 @@ ST7789V = DriverChip(
         ),
     ),
 )
-DriverChip(
+GC9A01A = DriverChip(
     "GC9A01A",
     mirror_x=True,
     width=240,
@@ -799,8 +802,6 @@ ST7789V.extend(
     reset_pin=2,
     dc_pin=0,
 )
-
-
 ST7789V.extend(
     "GEEKMAGIC-SMALLTV-PRO",
     data_rate="40MHz",
